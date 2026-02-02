@@ -1,4 +1,3 @@
-
 /// DKStateEvent - 用于一次性事件操作的状态管理
 ///
 /// 适用场景：
@@ -35,6 +34,22 @@
 /// ```
 sealed class DKStateEvent<T> {
   const DKStateEvent();
+
+  bool get isIdle => this is DKStateEventIdle<T>;
+
+  bool get isLoading => this is DKStateEventLoading<T>;
+
+  bool get isSuccess => this is DKStateEventSuccess<T>;
+
+  bool get isError => this is DKStateEventError<T>;
+
+  T get data => this is DKStateEventSuccess<T>
+      ? (this as DKStateEventSuccess<T>).data
+      : throw DKStateEventException('No data available');
+
+  String get errorMessage => this is DKStateEventError<T>
+      ? (this as DKStateEventError<T>).message
+      : throw DKStateEventException('No error message available');
 }
 
 /// 状态：空闲
@@ -71,7 +86,12 @@ class DKStateEventError<T> extends DKStateEvent<T> {
   final Object? error;
   final StackTrace? stackTrace;
 
-  const DKStateEventError(this.runId, this.message, {this.error, this.stackTrace});
+  const DKStateEventError(
+    this.runId,
+    this.message, {
+    this.error,
+    this.stackTrace,
+  });
 }
 
 class DkStateEventCompleted<T> extends DKStateEvent<T> {
@@ -81,4 +101,8 @@ class DkStateEventCompleted<T> extends DKStateEvent<T> {
   const DkStateEventCompleted(this.runId);
 }
 
+class DKStateEventException implements Exception {
+  final String message;
 
+  DKStateEventException(this.message);
+}

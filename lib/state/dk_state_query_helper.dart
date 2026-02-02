@@ -9,7 +9,7 @@ class DKStateQueryHelper {
 
   static final _tag = 'DKStateQueryHelper';
 
-  static Future<void> query<T>({
+  static Future<void> triggerQuery<T>({
     required Future<T> Function() query,
     bool Function(T data)? isEmpty,
     required void Function(DKStateQuery<T> state) onStateChange,

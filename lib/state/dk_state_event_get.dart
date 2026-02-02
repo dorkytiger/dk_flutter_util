@@ -14,7 +14,7 @@ extension DKStateEventGet<T> on Rx<DKStateEvent<T>> {
 
   StreamSubscription<DKStateEvent<T>> listenEvent({
     void Function()? onLoading,
-    void Function(T data, String message)? onSuccess,
+    void Function(T data)? onSuccess,
     void Function(String message, Object? error, StackTrace? stackTrace)?
     onError,
     void Function()? onIdle,

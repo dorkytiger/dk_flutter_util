@@ -48,7 +48,7 @@ extension DKStateEventFlutterExtension<T> on StreamController<DKStateEvent<T>> {
   /// @return StreamSubscription<DKStateEvent<T>>
   StreamSubscription<DKStateEvent<T>> listenEvent({
     void Function()? onLoading,
-    void Function(T data, String message)? onSuccess,
+    void Function(T data)? onSuccess,
     void Function(String message, Object? error, StackTrace? stackTrack)?
     onError,
     void Function()? onIdle,

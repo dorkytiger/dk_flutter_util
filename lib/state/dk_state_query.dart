@@ -99,7 +99,7 @@ class DKStateQueryDisplay<T> extends StatelessWidget {
   final Widget Function(T data) successBuilder;
   final Widget Function()? retryBuilder;
   final VoidCallback? onRetry;
-  final Duration transitionDuration;
+  final Duration? transitionDuration;
   final Color? backgroundColor;
 
   const DKStateQueryDisplay({
@@ -112,14 +112,14 @@ class DKStateQueryDisplay<T> extends StatelessWidget {
     required this.successBuilder,
     this.retryBuilder,
     this.onRetry,
-    this.transitionDuration = const Duration(milliseconds: 500),
+    this.transitionDuration,
     this.backgroundColor,
   });
 
   @override
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
-      duration: transitionDuration,
+      duration: transitionDuration ?? const Duration(milliseconds: 500),
       child: _buildChild(context),
     );
   }

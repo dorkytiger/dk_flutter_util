@@ -16,7 +16,7 @@ void main() async {
     onLoading: () {
       DKLog.w('状态：加载中...', tag: 'StateChange');
     },
-    onSuccess: (data, message) {
+    onSuccess: (data) {
       DKLog.i('状态：成功! 数据: $data', tag: 'StateChange');
     },
     onError: (message, error, stackTrace) {

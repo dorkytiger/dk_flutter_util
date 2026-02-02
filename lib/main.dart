@@ -69,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ).showSnackBar(const SnackBar(content: Text('Submitting...')));
         }
       },
-      onSuccess: (data, message) {
+      onSuccess: (data) {
         if (mounted) {
           ScaffoldMessenger.of(
             context,

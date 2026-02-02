@@ -61,7 +61,7 @@ extension DkStateQueryFlutterExtension<T> on ValueNotifier<DKStateQuery<T>> {
     required Future<T> Function() query,
     bool Function(T data)? isEmpty,
   }) async {
-    await DKStateQueryHelper.query<T>(
+    await DKStateQueryHelper.triggerQuery<T>(
       query: query,
       isEmpty: isEmpty,
       onStateChange: (state) => value = state,

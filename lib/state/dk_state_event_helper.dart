@@ -48,7 +48,7 @@ class DKStateEventHelper {
 
     try {
       DKStateUtil.callLog(
-            () => DKLog.title("[$runId] 开始处理事件: $T", tag: logTag),
+        () => DKLog.title("[$runId] 开始处理事件: $T", tag: logTag),
       );
       DKStateUtil.callLog(DKLog.separator);
       DKStateUtil.callLog(() => DKLog.d("[$runId] 触发事件: $T", tag: logTag));
@@ -61,8 +61,7 @@ class DKStateEventHelper {
 
       // 发送成功状态
       onStateChange(DKStateEventSuccess<T>(runId, result));
-      DKStateUtil.callLog(() =>
-          DKLog.i("[$runId] 事件成功完成: $T", tag: logTag));
+      DKStateUtil.callLog(() => DKLog.i("[$runId] 事件成功完成: $T", tag: logTag));
 
       // 记录结果（如果需要）
       if (result != null) {
@@ -71,7 +70,7 @@ class DKStateEventHelper {
         } catch (_) {
           // JSON 序列化失败时忽略
           DKStateUtil.callLog(
-                () => DKLog.d("[$runId] 结果: $result", tag: logTag),
+            () => DKLog.d("[$runId] 结果: $result", tag: logTag),
           );
         }
       }
@@ -87,13 +86,12 @@ class DKStateEventHelper {
         ),
       );
       DKStateUtil.callLog(
-            () =>
-            DKLog.e(
-              "[$runId] 事件执行出错: $errorMessage",
-              tag: logTag,
-              error: e,
-              stackTrace: stackTrace,
-            ),
+        () => DKLog.e(
+          "[$runId] 事件执行出错: $errorMessage",
+          tag: logTag,
+          error: e,
+          stackTrace: stackTrace,
+        ),
       );
     } finally {
       onStateChange(DkStateEventCompleted<T>(runId));
@@ -102,7 +100,7 @@ class DKStateEventHelper {
       });
       DKStateUtil.callLog(DKLog.separator);
       DKStateUtil.callLog(
-            () => DKLog.title("[$runId] 结束处理事件: $T", tag: logTag),
+        () => DKLog.title("[$runId] 结束处理事件: $T", tag: logTag),
       );
     }
   }
@@ -140,9 +138,10 @@ class DKStateEventHelper {
   ///
   /// );
   /// ```
-  static Future<void> handleState<T>(DKStateEvent<T> state, {
+  static Future<void> handleState<T>(
+    DKStateEvent<T> state, {
     void Function()? onLoading,
-    void Function(T data, String message)? onSuccess,
+    void Function(T data)? onSuccess,
     void Function(String message, Object? error, StackTrace? stackTrace)?
     onError,
     void Function()? onIdle,
@@ -151,141 +150,137 @@ class DKStateEventHelper {
     if (state is DKStateEventLoading<T>) {
       if (onLoading != null) {
         DKStateUtil.callLog(
-              () => DKLog.d("[${state.runId}] 状态：加载中", tag: _tag),
+          () => DKLog.d("[${state.runId}] 状态：加载中", tag: _tag),
         );
         try {
-          DKStateUtil.callLog(() =>
-              DKLog.i("[${state.runId}] 开始执行加载中回调", tag: _tag));
+          DKStateUtil.callLog(
+            () => DKLog.i("[${state.runId}] 开始执行加载中回调", tag: _tag),
+          );
           onLoading();
           DKStateUtil.callLog(
-                () => DKLog.i("[${state.runId}] 加载中回调执行完毕", tag: _tag),
+            () => DKLog.i("[${state.runId}] 加载中回调执行完毕", tag: _tag),
           );
         } catch (e, stackTrace) {
           DKStateUtil.callLog(
-                () =>
-                DKLog.e(
-                  "[${state.runId}] 加载中回调出错: $e",
-                  tag: _tag,
-                  error: e,
-                  stackTrace: stackTrace,
-                ),
+            () => DKLog.e(
+              "[${state.runId}] 加载中回调出错: $e",
+              tag: _tag,
+              error: e,
+              stackTrace: stackTrace,
+            ),
           );
         } finally {
-          DKStateUtil.callLog(() =>
-              DKLog.i("[${state.runId}] 结束执行加载中回调", tag: _tag));
+          DKStateUtil.callLog(
+            () => DKLog.i("[${state.runId}] 结束执行加载中回调", tag: _tag),
+          );
         }
       }
     } else if (state is DKStateEventSuccess<T>) {
       if (onSuccess != null) {
-        DKStateUtil.callLog(() =>
-            DKLog.i("[${state.runId}] 状态：成功", tag: _tag));
+        DKStateUtil.callLog(() => DKLog.i("[${state.runId}] 状态：成功", tag: _tag));
         try {
-          DKStateUtil.callLog(() =>
-              DKLog.i("[${state.runId}] 开始执行成功回调", tag: _tag));
-          onSuccess(state.data, "操作成功");
           DKStateUtil.callLog(
-                () => DKLog.i("[${state.runId}] 成功回调执行完毕", tag: _tag),
+            () => DKLog.i("[${state.runId}] 开始执行成功回调", tag: _tag),
+          );
+          onSuccess(state.data,);
+          DKStateUtil.callLog(
+            () => DKLog.i("[${state.runId}] 成功回调执行完毕", tag: _tag),
           );
         } catch (e, stackTrace) {
           DKStateUtil.callLog(
-                () =>
-                DKLog.e(
-                  "[${state.runId}] 成功回调出错: $e",
-                  tag: _tag,
-                  error: e,
-                  stackTrace: stackTrace,
-                ),
+            () => DKLog.e(
+              "[${state.runId}] 成功回调出错: $e",
+              tag: _tag,
+              error: e,
+              stackTrace: stackTrace,
+            ),
           );
         } finally {
-          DKStateUtil.callLog(() =>
-              DKLog.i("[${state.runId}] 结束执行成功回调", tag: _tag));
+          DKStateUtil.callLog(
+            () => DKLog.i("[${state.runId}] 结束执行成功回调", tag: _tag),
+          );
         }
       }
     } else if (state is DKStateEventError<T>) {
       if (onError != null) {
         DKStateUtil.callLog(
-              () =>
-              DKLog.e(
-                  "[${state.runId}] 状态：错误 - ${state.message}", tag: _tag),
+          () => DKLog.e("[${state.runId}] 状态：错误 - ${state.message}", tag: _tag),
         );
         try {
-          DKStateUtil.callLog(() =>
-              DKLog.i("[${state.runId}] 开始执行错误回调", tag: _tag));
+          DKStateUtil.callLog(
+            () => DKLog.i("[${state.runId}] 开始执行错误回调", tag: _tag),
+          );
           onError(state.message, state.error, state.stackTrace);
           DKStateUtil.callLog(
-                () => DKLog.i("[${state.runId}] 错误回调执行完毕", tag: _tag),
+            () => DKLog.i("[${state.runId}] 错误回调执行完毕", tag: _tag),
           );
         } catch (e, stackTrace) {
           DKStateUtil.callLog(
-                () =>
-                DKLog.e(
-                  "[${state.runId}] 错误回调出错: $e",
-                  tag: _tag,
-                  error: e,
-                  stackTrace: stackTrace,
-                ),
+            () => DKLog.e(
+              "[${state.runId}] 错误回调出错: $e",
+              tag: _tag,
+              error: e,
+              stackTrace: stackTrace,
+            ),
           );
         } finally {
-          DKStateUtil.callLog(() =>
-              DKLog.i("[${state.runId}] 结束执行错误回调", tag: _tag));
+          DKStateUtil.callLog(
+            () => DKLog.i("[${state.runId}] 结束执行错误回调", tag: _tag),
+          );
         }
       } else if (state is DKStateEventIdle<T>) {
         if (onIdle != null) {
           DKStateUtil.callLog(
-                () => DKLog.d("[${state.runId ?? 'N/A'}] 状态：空闲", tag: _tag),
+            () => DKLog.d("[${state.runId ?? 'N/A'}] 状态：空闲", tag: _tag),
           );
           try {
-            DKStateUtil.callLog(() =>
-                DKLog.i(
-                    "[${state.runId ?? 'N/A'}] 开始执行空闲回调", tag: _tag));
+            DKStateUtil.callLog(
+              () => DKLog.i("[${state.runId ?? 'N/A'}] 开始执行空闲回调", tag: _tag),
+            );
             onIdle();
             DKStateUtil.callLog(
-                  () =>
-                  DKLog.i(
-                    "[${state.runId ?? 'N/A'}] 空闲回调执行完毕",
-                    tag: _tag,
-                  ),
+              () => DKLog.i("[${state.runId ?? 'N/A'}] 空闲回调执行完毕", tag: _tag),
             );
           } catch (e, stackTrace) {
             DKStateUtil.callLog(
-                  () =>
-                  DKLog.e(
-                    "[${state.runId ?? 'N/A'}] 空闲回调出错: $e",
-                    tag: _tag,
-                    error: e,
-                    stackTrace: stackTrace,
-                  ),
+              () => DKLog.e(
+                "[${state.runId ?? 'N/A'}] 空闲回调出错: $e",
+                tag: _tag,
+                error: e,
+                stackTrace: stackTrace,
+              ),
             );
           } finally {
-            DKStateUtil.callLog(() =>
-                DKLog.i(
-                    "[${state.runId ?? 'N/A'}] 结束执行空闲回调", tag: _tag));
+            DKStateUtil.callLog(
+              () => DKLog.i("[${state.runId ?? 'N/A'}] 结束执行空闲回调", tag: _tag),
+            );
           }
         } else if (state is DkStateEventCompleted<T>) {
           if (onComplete != null) {
-            DKStateUtil.callLog(() =>
-                DKLog.d("[${state.runId}] 状态：完成", tag: _tag));
+            DKStateUtil.callLog(
+              () => DKLog.d("[${state.runId}] 状态：完成", tag: _tag),
+            );
             try {
-              DKStateUtil.callLog(() =>
-                  DKLog.i("[${state.runId}] 开始执行完成回调", tag: _tag));
+              DKStateUtil.callLog(
+                () => DKLog.i("[${state.runId}] 开始执行完成回调", tag: _tag),
+              );
               onComplete();
               DKStateUtil.callLog(
-                    () =>
-                    DKLog.i("[${state.runId}] 完成回调执行完毕", tag: _tag),
+                () => DKLog.i("[${state.runId}] 完成回调执行完毕", tag: _tag),
               );
             } catch (e, stackTrace) {
               DKStateUtil.callLog(
-                    () =>
-                    DKLog.e(
-                      "[${state.runId}] 完成回调出错: $e",
-                      tag: _tag,
-                      error: e,
-                      stackTrace: stackTrace,
-                    ),
+                () => DKLog.e(
+                  "[${state.runId}] 完成回调出错: $e",
+                  tag: _tag,
+                  error: e,
+                  stackTrace: stackTrace,
+                ),
               );
             } finally {
-              DKStateUtil.callLog(() =>
-                  DKLog.i("[${state.runId}] 结束执行完成回调", tag: _tag));
+              DKStateUtil.callLog(
+                () => DKLog.i("[${state.runId}] 结束执行完成回调", tag: _tag),
+              );
             }
           }
         }
