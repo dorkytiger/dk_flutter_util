@@ -3,8 +3,6 @@ import 'package:dk_util/log/dk_log_view.dart';
 import 'package:dk_util/state/dk_state_example.dart';
 import 'package:flutter/material.dart';
 
-import 'main.dart';
-
 /// 应用路由配置
 class AppRoutes {
   static const String home = '/';

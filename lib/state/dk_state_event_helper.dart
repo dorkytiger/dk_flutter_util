@@ -231,20 +231,20 @@ class DKStateEventHelper {
       } else if (state is DKStateEventIdle<T>) {
         if (onIdle != null) {
           DKStateUtil.callLog(
-            () => DKLog.d("[${state.runId ?? 'N/A'}] 状态：空闲", tag: _tag),
+            () => DKLog.d("[${state.runId}] 状态：空闲", tag: _tag),
           );
           try {
             DKStateUtil.callLog(
-              () => DKLog.i("[${state.runId ?? 'N/A'}] 开始执行空闲回调", tag: _tag),
+              () => DKLog.i("[${state.runId}] 开始执行空闲回调", tag: _tag),
             );
             onIdle();
             DKStateUtil.callLog(
-              () => DKLog.i("[${state.runId ?? 'N/A'}] 空闲回调执行完毕", tag: _tag),
+              () => DKLog.i("[${state.runId}] 空闲回调执行完毕", tag: _tag),
             );
           } catch (e, stackTrace) {
             DKStateUtil.callLog(
               () => DKLog.e(
-                "[${state.runId ?? 'N/A'}] 空闲回调出错: $e",
+                "[${state.runId}] 空闲回调出错: $e",
                 tag: _tag,
                 error: e,
                 stackTrace: stackTrace,
@@ -252,7 +252,7 @@ class DKStateEventHelper {
             );
           } finally {
             DKStateUtil.callLog(
-              () => DKLog.i("[${state.runId ?? 'N/A'}] 结束执行空闲回调", tag: _tag),
+              () => DKLog.i("[${state.runId}] 结束执行空闲回调", tag: _tag),
             );
           }
         } else if (state is DkStateEventCompleted<T>) {

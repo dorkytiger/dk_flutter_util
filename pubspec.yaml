@@ -2,6 +2,7 @@ name: dk_util
 description: DorkyTiger's Flutter utility library with logging, state management and more
 version: 1.0.0
 
+repository:
 
 environment:
   sdk: ^3.10.7
