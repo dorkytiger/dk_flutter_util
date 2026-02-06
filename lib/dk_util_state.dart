@@ -1,7 +1,7 @@
 /// DK Util - 状态管理模块
 ///
 /// 只导入状态管理相关功能
-library dk_util_state;
+library;
 
 // 核心状态定义
 export 'state/dk_state.dart';

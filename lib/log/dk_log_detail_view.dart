@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:dk_util/state/dk_state_query.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -41,6 +40,12 @@ class _DKLogDetailViewState extends State<DKLogDetailView> {
   // 当前选择的日志级别
   LogLevel _selectedLevel = LogLevel.all;
 
+  // 当前选择的标签
+  String? _selectedTag;
+
+  // 所有可用标签
+  Set<String> _availableTags = {};
+
   // 搜索文本
   String _searchText = '';
 
@@ -51,10 +56,33 @@ class _DKLogDetailViewState extends State<DKLogDetailView> {
     await _getFileContentState.query(
       query: () async {
         final content = await widget.file.readAsLines();
+        // 提取所有标签
+        _extractTags(content);
         return content;
       },
       isEmpty: (data) => data.isEmpty,
     );
+  }
+
+  // 从日志内容中提取所有标签
+  void _extractTags(List<String> lines) {
+    final tags = <String>{};
+    // 匹配 #TagName 格式的标签
+    final tagRegex = RegExp(r'#(\w+)');
+
+    for (final line in lines) {
+      final matches = tagRegex.allMatches(line);
+      for (final match in matches) {
+        final tag = match.group(1);
+        if (tag != null && tag.isNotEmpty) {
+          tags.add(tag);
+        }
+      }
+    }
+
+    setState(() {
+      _availableTags = tags;
+    });
   }
 
   @override
@@ -91,6 +119,13 @@ class _DKLogDetailViewState extends State<DKLogDetailView> {
       }).toList();
     }
 
+    // 按标签过滤
+    if (_selectedTag != null) {
+      filtered = filtered.where((line) {
+        return line.contains('#$_selectedTag');
+      }).toList();
+    }
+
     // 按搜索文本过滤
     if (_searchText.isNotEmpty) {
       filtered = filtered.where((line) {
@@ -114,7 +149,7 @@ class _DKLogDetailViewState extends State<DKLogDetailView> {
     } else if (line.contains('💀') || line.contains('[FATAL]')) {
       return Colors.purple.shade700;
     }
-    return null;
+    return Colors.black;
   }
 
   // 高亮搜索文本
@@ -294,6 +329,77 @@ class _DKLogDetailViewState extends State<DKLogDetailView> {
             ),
           ),
 
+          // 标签筛选器
+          if (_availableTags.isNotEmpty) ...[
+            Container(
+              height: 50,
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Row(
+                children: [
+                  // 标签图标和标题
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Row(
+                      children: [
+                        Icon(Icons.label_outline, size: 18, color: Colors.grey.shade600),
+                        const SizedBox(width: 4),
+                        Text(
+                          '标签:',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade600,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // 标签选择器
+                  Expanded(
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                        // 全部标签选项
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: ChoiceChip(
+                            label: const Text('全部'),
+                            selected: _selectedTag == null,
+                            onSelected: (selected) {
+                              setState(() {
+                                _selectedTag = null;
+                              });
+                            },
+                            selectedColor: Colors.green.shade100,
+                            backgroundColor: Colors.grey.shade200,
+                          ),
+                        ),
+                        // 各个标签选项
+                        ..._availableTags.map((tag) {
+                          final isSelected = _selectedTag == tag;
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            child: ChoiceChip(
+                              label: Text('#$tag'),
+                              selected: isSelected,
+                              onSelected: (selected) {
+                                setState(() {
+                                  _selectedTag = selected ? tag : null;
+                                });
+                              },
+                              selectedColor: Colors.green.shade100,
+                              backgroundColor: Colors.grey.shade200,
+                            ),
+                          );
+                        }),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+
           const Divider(height: 1),
 
           // 日志内容
@@ -341,6 +447,58 @@ class _DKLogDetailViewState extends State<DKLogDetailView> {
                             '显示 ${filteredLines.length} / ${data.length} 行',
                             style: const TextStyle(fontSize: 12),
                           ),
+                          // 显示当前筛选条件
+                          if (_selectedTag != null || _selectedLevel != LogLevel.all) ...[
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.blue.shade200),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (_selectedLevel != LogLevel.all) ...[
+                                    Text(
+                                      _selectedLevel.icon ?? '',
+                                      style: const TextStyle(fontSize: 10),
+                                    ),
+                                    const SizedBox(width: 2),
+                                    Text(
+                                      _selectedLevel.label,
+                                      style: const TextStyle(fontSize: 10),
+                                    ),
+                                  ],
+                                  if (_selectedTag != null && _selectedLevel != LogLevel.all)
+                                    const Text(' | ', style: TextStyle(fontSize: 10)),
+                                  if (_selectedTag != null)
+                                    Text(
+                                      '#$_selectedTag',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.green.shade700,
+                                      ),
+                                    ),
+                                  const SizedBox(width: 4),
+                                  InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        _selectedLevel = LogLevel.all;
+                                        _selectedTag = null;
+                                      });
+                                    },
+                                    child: Icon(
+                                      Icons.close,
+                                      size: 14,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                           const Spacer(),
                           TextButton.icon(
                             onPressed: () {

@@ -2,12 +2,6 @@ name: dk_util
 description: DorkyTiger's Flutter utility library with logging, state management and more
 version: 1.0.0
 
-# 保持私有，不发布到 pub.dev（如需发布可删除此行）
-publish_to: 'none'
-
-# 仓库地址（可选，填写你的 Git 仓库地址）
-# repository: https://github.com/yourusername/dk_util
-# homepage: https://github.com/yourusername/dk_util
 
 environment:
   sdk: ^3.10.7
